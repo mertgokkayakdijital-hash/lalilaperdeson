@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{var t=localStorage.getItem("lalila_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <meta name="robots" content="noindex">
+  <title>Admin Giriş | Yönetim Paneli</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main class="container" style="padding-top: 100px; padding-bottom: 80px; max-width: 440px;">
+    <div style="background: var(--bg-secondary); padding: 32px; border-radius: 12px; border: 1px solid rgba(128,128,128,0.2);">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="/images/logo.png" alt="Logo" style="max-height: 54px; margin-bottom: 10px;" onerror="this.style.display='none'">
+        <h1 class="section-title" style="font-size: 1.75rem; margin-bottom: 6px;">Admin Girişi</h1>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Site yönetimi için giriş yapın</p>
+      </div>
+      <form id="loginForm" style="display: flex; flex-direction: column; gap: 14px;">
+        <input type="email" name="email" placeholder="E-posta" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+        <input type="password" name="password" placeholder="Şifre" required style="padding: 12px; border: 1px solid #ccc; border-radius: 6px;">
+        <button type="submit" class="cta-btn" style="border: none; cursor: pointer; text-align: center; padding: 12px; font-weight: 600;">Giriş Yap</button>
+        <p id="loginError" style="color:#d9534f;font-size:.875rem;min-height:1.2em;text-align:center;"></p>
+      </form>
+    </div>
+  </main>
+  <script type="module" src="/js/admin-login.js"></script>
+</body>
+</html>

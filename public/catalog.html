@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{var t=localStorage.getItem("lalila_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <title>Perde Kataloğu | Lalila Perde Sistemleri</title>
+  <meta name="description" content="Perde koleksiyonumuzda tül, fon, stor, zebra, jaluzi ve motorlu perde modellerini inceleyin.">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="pageLoader" class="page-loader" aria-hidden="true">
+    <div class="loader-inner">
+      <img src="/images/logo.png" alt="Logo" class="loader-logo" onerror="this.style.display='none'">
+      <div class="loader-curtain">
+        <span></span><span></span><span></span>
+      </div>
+      <p class="loader-text">Yükleniyor...</p>
+    </div>
+  </div>
+
+  <header class="main-header">
+    <div class="container">
+      <nav class="navbar">
+        <a href="/" class="logo" aria-label="Ana Sayfa">
+          <img src="/images/logo.png" alt="Logo" class="brand-logo-img" id="navbarLogoImg" onerror="this.style.display='none';document.getElementById('navbarLogoFallback').style.display='inline';">
+          <span class="logo-text" id="navbarLogoFallback" style="display:none;">Lalila</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/">Ana Sayfa</a></li>
+          <li><a href="/catalog" class="active">Katalog</a></li>
+          <li><a href="/#how-it-works">Nasıl Çalışır?</a></li>
+          <li><a href="/#contact">İletişim</a></li>
+        </ul>
+        <a href="#favorites" class="favorite-btn" id="catalogFavoritesBtn">
+          <span class="icon">❤️</span>
+          <span class="badge" id="favCount">0</span>
+          <span class="text">Favorilerim</span>
+        </a>
+        <a href="/#contact" class="cta-btn">Ücretsiz Keşif Al</a>
+        <button class="menu-toggle" aria-label="Menüyü aç" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="catalog-hero" style="padding-top: 120px; padding-bottom: 40px; background: var(--bg-secondary);">
+    <div class="container">
+      <div class="section-header" style="margin-bottom: 24px;">
+        <h1 class="section-title">Perde Koleksiyonu & Katalog</h1>
+        <p class="section-subtitle">Mekanınıza uygun kumaş, ışık geçirgenliği ve mekanizmayı seçerek inceleyin</p>
+      </div>
+
+      <div class="catalog-filters" style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; background: var(--bg-primary); padding: 20px; border-radius: 8px; border: 1px solid rgba(28, 28, 28, 0.08);">
+        <div class="filter-group" style="display: flex; flex-wrap: wrap; gap: 8px;" id="categoryFilters">
+          <button type="button" class="filter-btn active" data-category="all">Tümü</button>
+        </div>
+
+        <div class="filter-controls" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <input
+            type="search"
+            id="catalogSearch"
+            placeholder="Model, etiket veya kumaş ara..."
+            aria-label="Model veya kumaş ara"
+            style="padding: 10px 14px; border: 1px solid rgba(28, 28, 28, 0.16); border-radius: 4px; font-family: var(--font-sans); font-size: 0.875rem; background: var(--bg-primary); color: var(--text-primary);"
+          >
+          <select
+            id="lightFilter"
+            aria-label="Işık geçirgenliği"
+            style="padding: 10px 14px; border: 1px solid rgba(28, 28, 28, 0.16); border-radius: 4px; font-family: var(--font-sans); font-size: 0.875rem; background: var(--bg-primary); color: var(--text-primary);"
+          >
+            <option value="all">Tüm Işık Seviyeleri</option>
+            <option value="sheer">Yüksek Işık (Tül / Şeffaf)</option>
+            <option value="semi">Yarı Karartma</option>
+            <option value="blackout">Tam Karartma (Blackout)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="catalog-products" style="padding: 60px 0 90px;">
+    <div class="container">
+      <div id="catalogStatus" style="margin-bottom: 24px; color: var(--text-secondary); font-size: 0.9rem;">
+        Koleksiyon yükleniyor...
+      </div>
+
+      <div class="products-grid" id="productsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;"></div>
+    </div>
+  </section>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

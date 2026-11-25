@@ -1,0 +1,10 @@
+{
+  "name": "lalila-showroom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lalila lüks perde sistemleri statik showroom sitesi",
+  "scripts": {
+    "dev": "npx serve public"
+  },
+  "license": "MIT"
+}

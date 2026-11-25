@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>try{var t=localStorage.getItem("lalila_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+  <meta name="robots" content="noindex">
+  <title>Yönetim Paneli | Admin Dashboard</title>
+  <link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 90px; }
+    .admin-topbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid rgba(128,128,128,0.2); margin-bottom: 24px; }
+    .admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .admin-tab { padding: 10px 18px; border-radius: 8px; border: 1px solid rgba(128,128,128,0.25); background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; font-weight: 500; font-size: 0.9rem; }
+    .admin-tab.active { background: var(--accent); color: #1C1C1C; border-color: var(--accent); font-weight: 600; }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+    .admin-card { background: var(--bg-secondary); padding: 24px; border-radius: 10px; border: 1px solid rgba(128,128,128,0.18); margin-bottom: 24px; }
+    .admin-card h2 { font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 16px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+    .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; border: 1px solid rgba(128,128,128,0.3); border-radius: 6px; font-family: var(--font-sans); font-size: 0.9rem; }
+    .emoji-picker-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .emoji-chip { padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(128,128,128,0.25); background: var(--bg-primary); cursor: pointer; font-size: 1.1rem; }
+    .emoji-chip:hover { background: var(--accent); }
+    .product-admin-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+    .product-admin-item { background: var(--bg-primary); border: 1px solid rgba(128,128,128,0.2); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+    .product-admin-item img { width: 100%; height: 160px; object-fit: cover; background: #222; }
+    .product-admin-body { padding: 14px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .btn-danger { background: #d9534f; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .btn-edit { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid rgba(128,128,128,0.3); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .toast-msg { position: fixed; bottom: 24px; right: 24px; background: #1C1C1C; color: #FAF8F5; padding: 14px 20px; border-radius: 8px; z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: none; font-size: 0.9rem; border-left: 4px solid var(--accent); }
+    .cat-row-editor { display: grid; grid-template-columns: 70px 1fr 1fr 1.2fr auto; gap: 10px; align-items: center; padding: 12px; background: var(--bg-primary); border-radius: 8px; border: 1px solid rgba(128,128,128,0.2); margin-bottom: 10px; }
+    @media (max-width: 768px) { .cat-row-editor { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="admin-wrap">
+    <div class="admin-topbar">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <img src="/images/logo.png" alt="Logo" style="height:44px;" onerror="this.style.display='none'">
+        <div>
+          <h1 style="font-family:var(--font-serif); font-size:1.6rem;">Yönetim Paneli</h1>
+          <p id="adminUser" style="font-size:0.85rem; color:var(--text-secondary);">Oturum kontrol ediliyor...</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <a href="/" target="_blank" class="btn-edit" style="text-decoration:none;">Siteyi Görüntüle ↗</a>
+        <button id="logoutBtn" class="cta-btn" style="border:none; cursor:pointer;">Çıkış Yap</button>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+      <button type="button" class="admin-tab active" data-tab="tab-products">🛍️ Ürün Yönetimi (Ekle / Kaldır / Etiket)</button>
+      <button type="button" class="admin-tab" data-tab="tab-categories">🪟 Perde Türleri & Emoji</button>
+      <button type="button" class="admin-tab" data-tab="tab-homepage">🏠 Ana Sayfa & Slider Düzenle</button>
+      <button type="button" class="admin-tab" data-tab="tab-contact">📞 WhatsApp, Logo & İletişim</button>
+      <button type="button" class="admin-tab" data-tab="tab-seo">🔍 SEO & Sekme İkonu Ayarları</button>
+    </div>
+
+    <!-- TAB 1: ÜRÜNLER -->
+    <div id="tab-products" class="admin-panel active">
+      <div class="admin-card">
+        <h2 id="productFormTitle">Yeni Ürün Ekle</h2>
+        <form id="productForm">
+          <input type="hidden" id="editProductId">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Ürün Adı *</label>
+              <input type="text" id="prodName" placeholder="Örn: Linen Breeze Keten Tül" required>
+            </div>
+            <div class="form-group">
+              <label>Perde Türü (Kategori) *</label>
+              <select id="prodCategory" required></select>
+            </div>
+            <div class="form-group">
+              <label>Işık Geçirgenliği</label>
+              <select id="prodLight">
+                <option value="sheer">Yüksek Işık (Tül / Şeffaf)</option>
+                <option value="semi">Yarı Karartma</option>
+                <option value="blackout">Tam Karartma (Blackout)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Ürün Etiketi (Rozet)</label>
+              <select id="prodBadgePreset">
+                <option value="">Etiket Yok</option>
+                <option value="Yeni Ürün">✨ Yeni Ürün</option>
+                <option value="Fırsat Ürünü">🔥 Fırsat Ürünü</option>
+                <option value="Çok Satan">⭐ Çok Satan</option>
+                <option value="İndirimli">🏷️ İndirimli</option>
+                <option value="Özel Tasarım">👑 Özel Tasarım</option>
+                <option value="custom">Özel Etiket Yaz...</option>
+              </select>
+            </div>
+            <div class="form-group" id="customBadgeGroup" style="display:none;">
+              <label>Özel Etiket Metni</label>
+              <input type="text" id="prodBadgeCustom" placeholder="Örn: Sınırlı Stok">
+            </div>
+            <div class="form-group">
+              <label>Etiket Rengi</label>
+              <input type="color" id="prodBadgeColor" value="#B08D57" style="height:42px; padding:4px;">
+            </div>
+            <div class="form-group">
+              <label>Fiyat Bilgisi (İsteğe bağlı)</label>
+              <input type="text" id="prodPrice" placeholder="Örn: 450 ₺ / m² veya Ücretsiz Keşif">
+            </div>
+            <div class="form-group">
+              <label>Ürün Görsel Yolu / URL (veya Bilgisayardan Seç)</label>
+              <input type="text" id="prodImage" placeholder="/images/category-tul.jpg" value="/images/category-tul.jpg">
+              <input type="file" id="prodImageFile" accept="image/*" style="margin-top:6px; font-size:0.8rem;">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ürün Açıklaması *</label>
+            <textarea id="prodDesc" rows="3" placeholder="Kumaş dokusu, kullanım alanı ve özellikleri..." required></textarea>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="submit" class="cta-btn" style="border:none; cursor:pointer; font-weight:600;" id="prodSubmitBtn">+ Ürünü Kaydet</button>
+            <button type="button" class="btn-edit" id="prodCancelEditBtn" style="display:none;">Düzenlemeyi İptal Et</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <h2 style="margin:0;">Mevcut Ürünler (<span id="adminProductCount">0</span>)</h2>
+          <button type="button" id="seedDefaultsBtn" class="btn-edit">Örnek Ürünleri Yükle</button>
+        </div>
+        <div id="adminProductsList" class="product-admin-list"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PERDE TÜRLERİ & EMOJİ -->
+    <div id="tab-categories" class="admin-panel">
+      <div class="admin-card">
+        <h2>Perde Türleri ve Sol Üst Emoji Ayarları</h2>
+        <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:16px;">Ana sayfadaki perde türlerinin ismini, görselini ve sol üst köşedeki emojisini buradan özelleştirebilir, yeni tür ekleyip kaldırabilirsiniz.</p>
+        <div id="categoriesEditorList"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+          <button type="button" id="addCategoryBtn" class="btn-edit">+ Yeni Perde Türü Ekle</button>
+          <button type="button" id="saveCategoriesBtn" class="cta-btn" style="border:none; cursor:pointer; font-weight:600;">Perde Türlerini Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: ANA SAYFA İÇERİKLERİ -->
+    <div id="tab-homepage" class="admin-panel">
+      <div class="admin-card">
+        <h2>Ana Sayfa Giriş (Hero) Alanı</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Ana Başlık</label>
+            <input type="text" id="setHeroTitle">
+          </div>
+          <div class="form-group">
+            <label>Alt Açıklama</label>
+            <input type="text" id="setHeroSubtitle">
+          </div>
+          <div class="form-group">
+            <label>1. Buton Yazısı</label>
+            <input type="text" id="setHeroBtn1Text">
+          </div>
+          <div class="form-group">
+            <label>2. Buton Yazısı</label>
+            <input type="text" id="setHeroBtn2Text">
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h2>Ana Sayfa Slider (3 Slayt)</h2>
+        <div id="slidesEditorList"></div>
+      </div>
+
+      <div class="admin-card">
+        <h2>3 Adımda Nasıl Çalışır Bölümü</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Bölüm Başlığı</label>
+            <input type="text" id="setStepsTitle">
+          </div>
+          <div class="form-group">
+            <label>Bölüm Alt Başlığı</label>
+            <input type="text" id="setStepsSubtitle">
+          </div>
+        </div>
+        <div id="stepsEditorList" class="form-grid"></div>
+      </div>
+
+      <div class="admin-card">
+        <h2>Perde Türleri Bölüm Başlıkları</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Bölüm Başlığı</label>
+            <input type="text" id="setCategoriesTitle">
+          </div>
+          <div class="form-group">
+            <label>Bölüm Alt Başlığı</label>
+            <input type="text" id="setCategoriesSubtitle">
+          </div>
+        </div>
+        <button type="button" id="saveHomepageBtn" class="cta-btn" style="border:none; cursor:pointer; font-weight:600;">Tüm Ana Sayfa Değişikliklerini Kaydet</button>
+      </div>
+    </div>
+
+    <!-- TAB 4: WHATSAPP, LOGO & İLETİŞİM -->
+    <div id="tab-contact" class="admin-panel">
+      <div class="admin-card">
+        <h2>Logo, WhatsApp ve İletişim Bilgileri</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Logo Dosya Yolu (ZIP içindeki public/images/logo.png)</label>
+            <input type="text" id="setLogoUrl" value="/images/logo.png">
+          </div>
+          <div class="form-group">
+            <label>Marka Adı (Logo yüklenemezse yedek yazı)</label>
+            <input type="text" id="setBrandName">
+          </div>
+          <div class="form-group">
+            <label>WhatsApp Numarası (Başında + olmadan, 905xxxxxxxxx)</label>
+            <input type="text" id="setWhatsappNumber" placeholder="905551234567">
+          </div>
+          <div class="form-group">
+            <label>WhatsApp Hazır Karşılama Mesajı</label>
+            <input type="text" id="setWhatsappMessage">
+          </div>
+          <div class="form-group">
+            <label>Telefon Numarası</label>
+            <input type="text" id="setPhone">
+          </div>
+          <div class="form-group">
+            <label>Adres</label>
+            <input type="text" id="setAddress">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Alt Bilgi (Footer) Açıklaması</label>
+          <textarea id="setFooterDesc" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Telif Hakkı (Copyright) Yazısı</label>
+          <input type="text" id="setCopyright">
+        </div>
+        <button type="button" id="saveContactBtn" class="cta-btn" style="border:none; cursor:pointer; font-weight:600;">İletişim ve WhatsApp Ayarlarını Kaydet</button>
+      </div>
+    </div>
+
+    <!-- TAB 5: SEO AYARLARI -->
+    <div id="tab-seo" class="admin-panel">
+      <div class="admin-card">
+        <h2>SEO ve Tarayıcı Sekmesi (Favicon) Ayarları</h2>
+        <div class="form-group">
+          <label>Site Başlığı (Google & Tarayıcı Sekmesi Title)</label>
+          <input type="text" id="setSeoTitle" placeholder="Lalila Perde Sistemleri | Keşif ve Ölçü Randevusu">
+        </div>
+        <div class="form-group">
+          <label>Meta Açıklama (Google Arama Açıklaması - Description)</label>
+          <textarea id="setSeoDescription" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Anahtar Kelimeler (Virgülle ayırın - Keywords)</label>
+          <input type="text" id="setSeoKeywords">
+        </div>
+        <div class="form-group">
+          <label>Sekme İkonu (Favicon) ve Paylaşım Görseli Yolu</label>
+          <input type="text" id="setOgImage" value="/images/logo.png">
+        </div>
+        <button type="button" id="saveSeoBtn" class="cta-btn" style="border:none; cursor:pointer; font-weight:600;">SEO Ayarlarını Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminToast" class="toast-msg"></div>
+
+  <script type="module" src="/js/admin-dashboard.js"></script>
+</body>
+</html>
